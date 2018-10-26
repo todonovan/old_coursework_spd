@@ -1,0 +1,100 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname Final) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ())))
+(require 2htdp/image)
+(require 2htdp/universe)
+
+;; Play simple pong where the computer never loses
+
+;; ===========
+;; Constants:
+
+(define WIDTH 800)
+(define HEIGHT 420)
+(define MTS (empty-scene WIDTH HEIGHT))
+(define SWIDTH 20)
+(define SHEIGHT SWIDTH)
+(define SBOX (rectangle SWIDTH SHEIGHT "outline" "black"))
+
+(define PADDLE-WIDTH 20)
+
+
+;; ===========
+;; Data defs:
+
+(define-struct player (paddle score))
+;; Player is (make-player Number[0, (- WIDTH PADDLE-WIDTH)] Natural)
+;; interp. the left edge of player paddle and the player's score
+
+(define P1 (make-player 0 0)) ;paddle on left edge of screen
+(define P2 (make-player 100 10)) ;paddle somewhere in middle
+(define P3 (make-player (- WIDTH PADDLE-WIDTH) 10)) ;paddle on right edge
+
+#;
+(define (fn-for-player p)
+  (... (player-paddle p)
+       (player-score p)))
+
+;; Template rules used:
+;;  - compound data: 2 fields
+
+
+(define-struct ball (x y angle spd))
+;; Ball is (make-ball Number[0, WIDTH] Number[0, HEIGHT] Natural[0, 360) Natural)
+;; interp. a ball has a current x and y location, an angle of travel, and a speed.
+
+(define B1 (make-ball 0 0 0 1))
+(define B2 (make-ball 100 200 56 10))
+(define B3 (make-ball WIDTH HEIGHT 300 20))
+
+#;
+(define (fn-for-ball b)
+  (... (ball-x b)
+       (ball-y b)
+       (ball-angle b)
+       (ball-spd b)))
+
+;; Template rules used:
+;;  - compound data: 4 fields
+
+;; ===========
+;; Functions:
+
+;; Player Ball -> Player Ball
+;; Start with (main (make-player 0 0) (make-ball 0 0 0 10)))
+
+(define (main p b)
+  (big-bang p b
+            (on-tick move-ball)    ;Ball -> Ball
+            (to-draw render-scene) ;World -> Image
+            (on-key move-paddle))) ;Player KE -> Player
+
+;; Ball -> Ball
+;; Given a ball, move it to its next location, checking for collisions
+;; !!!
+
+(define (move-ball b) (make-ball 0 0 0 0))
+
+;; World -> Image
+;; Draw the next game-state
+;; !!!
+
+;; (define (render-scene p b) MTS) ;stub
+
+(define (render-scene p b)
+  (place-images
+   (list (overlay (text (number->string (player-score p)) 15 "black")
+                  SBOX)
+         (rectangle PADDLE-WIDTH 15 "solid" "black")
+         (circle 5 "solid" "black"))
+   (list (make-posn 0 0)
+         (make-posn (+ (player-paddle p) (/ PADDLE-WIDTH 2)))
+         (make-posn (ball-x b) (ball-y b)))
+   MTS))
+         
+
+;; Player KE -> Player
+;; Moves the paddle on arrow-key
+;; !!!
+
+(define (move-paddle p ke) (make-player 0 0))
